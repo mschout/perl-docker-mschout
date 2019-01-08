@@ -1,0 +1,25 @@
+#!/bin/sh
+
+DIR=$(dirname $0)/..
+
+write_dockerfile() {
+    local version=$1
+
+    echo "Create dockefile for $version"
+
+    rm -f "$DIR/$version/Dockerfile"
+
+    cat << EOF > $DIR/$version/Dockerfile
+FROM mschout/perl-dzil-mschout:$version
+
+RUN apt-get update && \\
+    apt-get install -y vim && \\
+    apt-get clean && \\
+    cpanm -q --notest Task::BeLike::MSCHOUT && \\
+    rm -rf $HOME/.cpanm
+EOF
+}
+
+for ver in 5.*; do
+    write_dockerfile $ver
+done
